@@ -189,8 +189,10 @@ export default function GroupsPage() {
 
                   <div className="flex items-center justify-between">
                     <Badge variant="secondary">{group.category}</Badge>
-                    <Button size="sm" variant="outline">
+                    <Button size="sm" variant="outline" asChild>
+                      <a href={`/groups/${group.id}`}>
                       View
+                      </a>
                     </Button>
                   </div>
                 </CardContent>

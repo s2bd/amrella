@@ -229,13 +229,6 @@ export default function AdminDashboard() {
                   <div className="font-medium">View All Users</div>
                   <div className="text-sm text-gray-600">Browse and manage user accounts</div>
                 </a>
-                <a
-                  href="/admin/verification"
-                  className="block p-3 border rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  <div className="font-medium">Verification Requests</div>
-                  <div className="text-sm text-gray-600">Review and approve verification requests</div>
-                </a>
               </div>
             </CardContent>
           </Card>
