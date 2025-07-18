@@ -5,16 +5,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
 import { HashtagMentionInput } from "@/components/hashtag-mention-input"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Heart, MessageCircle, Share2, MoreHorizontal, ImageIcon, Video } from "lucide-react"
+import { Heart, MessageCircle, Share2, ImageIcon, VideoIcon } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { VerifiedBadge } from "@/components/verified-badge"
 import { PostActionsMenu } from "@/components/post-actions-menu"
 import { toast } from "@/hooks/use-toast"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useRouter } from "next/navigation"
 
 interface Post {
   id: string
@@ -60,9 +61,11 @@ export function ActivityFeed() {
   const router = useRouter()
 
   // Get current user ID
-  useState(() => {
+  useEffect(() => {
     const getCurrentUser = async () => {
-      const { data: { session } } = await supabase.auth.getSession()
+      const {
+        data: { session },
+      } = await supabase.auth.getSession()
       if (session) {
         setCurrentUserId(session.user.id)
       }
@@ -215,8 +218,8 @@ export function ActivityFeed() {
       <Card>
         <CardContent className="p-4">
           <div className="space-y-4">
-            <HashtagMentionInput 
-              value={newPost} 
+            <HashtagMentionInput
+              value={newPost}
               onChange={setNewPost}
               placeholder="What's on your mind? Use #hashtags and @mentions"
             />
@@ -244,7 +247,7 @@ export function ActivityFeed() {
                 </Button>
                 <Button variant="ghost" size="sm" asChild>
                   <label>
-                    <Video className="w-4 h-4 mr-2" />
+                    <VideoIcon className="w-4 h-4 mr-2" />
                     Video
                     <Input
                       type="file"
@@ -301,8 +304,8 @@ export function ActivityFeed() {
                     </Avatar>
                     <div>
                       <div className="flex items-center space-x-1">
-                        <p 
-                          className="font-medium cursor-pointer hover:underline" 
+                        <p
+                          className="font-medium cursor-pointer hover:underline"
                           onClick={() => router.push(`/profile/${post.user_id}`)}
                         >
                           {post.profiles?.full_name || "Anonymous"}
@@ -319,11 +322,7 @@ export function ActivityFeed() {
                   </div>
                   <div className="flex items-center space-x-2">
                     {post.type !== "text" && <Badge variant="secondary">{post.type}</Badge>}
-                    <PostActionsMenu 
-                      postId={post.id} 
-                      postUserId={post.user_id}
-                      currentUserId={currentUserId}
-                    />
+                    <PostActionsMenu postId={post.id} postUserId={post.user_id} currentUserId={currentUserId} />
                   </div>
                 </div>
 
