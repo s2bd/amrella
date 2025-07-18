@@ -16,11 +16,22 @@ interface ReportDialogProps {
   reportedUserId?: string
   reportedPostId?: string
   reportedCommentId?: string
+  open?: boolean
+  onOpenChange?: (open: boolean) => void
   children?: React.ReactNode
 }
 
-export function ReportDialog({ reportedUserId, reportedPostId, reportedCommentId, children }: ReportDialogProps) {
-  const [open, setOpen] = useState(false)
+export function ReportDialog({ 
+  reportedUserId, 
+  reportedPostId, 
+  reportedCommentId, 
+  open: controlledOpen,
+  onOpenChange: controlledOnOpenChange,
+  children 
+}: ReportDialogProps) {
+  const [internalOpen, setInternalOpen] = useState(false)
+  const open = controlledOpen !== undefined ? controlledOpen : internalOpen
+  const setOpen = controlledOnOpenChange || setInternalOpen
   const queryClient = useQueryClient()
 
   const reportMutation = useMutation({

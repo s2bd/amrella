@@ -271,7 +271,7 @@ export default function SupportPage() {
                               <div className="flex items-center space-x-1">
                                 <span>Assigned to:</span>
                                 <Avatar className="w-4 h-4">
-                                  <AvatarImage src={ticket.assigned_admin.avatar_url || "/placeholder.svg"} />
+                                  <AvatarImage src={ticket.assigned_admin.avatar_url || "/placeholder-user.jpg"} />
                                   <AvatarFallback>{ticket.assigned_admin.full_name?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <span>{ticket.assigned_admin.full_name}</span>
@@ -329,7 +329,7 @@ export default function SupportPage() {
                         <div className="flex items-center space-x-4 text-sm text-gray-500">
                           <div className="flex items-center space-x-1">
                             <Avatar className="w-4 h-4">
-                              <AvatarImage src={ticket.user.avatar_url || "/placeholder.svg"} />
+                              <AvatarImage src={ticket.user.avatar_url || "/placeholder-user.jpg"} />
                               <AvatarFallback>{ticket.user.full_name?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span>{ticket.user.full_name}</span>

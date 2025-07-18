@@ -237,7 +237,7 @@ export default function CoursesPage() {
                       <div className="flex items-center justify-between pt-4 border-t">
                         <div className="flex items-center space-x-2">
                           <Avatar className="w-6 h-6">
-                            <AvatarImage src={course.instructor.avatar_url || "/placeholder.svg"} />
+                            <AvatarImage src={course.instructor.avatar_url || "/placeholder-user.jpg"} />
                             <AvatarFallback>{course.instructor.full_name?.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <span className="text-sm text-gray-600">{course.instructor.full_name}</span>
@@ -268,7 +268,7 @@ export default function CoursesPage() {
                 <div className="h-48 bg-gradient-to-r from-purple-500 to-pink-600 relative">
                   {enrollment.course.thumbnail_url && (
                     <img
-                      src={enrollment.course.thumbnail_url || "/placeholder.svg"}
+                      src={enrollment.course.thumbnail_url || "/placeholder-user.jpg"}
                       alt={enrollment.course.title}
                       className="w-full h-full object-cover"
                     />

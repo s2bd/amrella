@@ -176,7 +176,7 @@ export default function AdminReportsPage() {
                             <h4 className="font-medium text-sm text-gray-700 mb-2">Reporter</h4>
                             <div className="flex items-center space-x-2">
                               <Avatar className="w-6 h-6">
-                                <AvatarImage src={report.reporter.avatar_url || "/placeholder.svg"} />
+                                <AvatarImage src={report.reporter.avatar_url || "/placeholder-user.jpg"} />
                                 <AvatarFallback>{report.reporter.full_name?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="text-sm">{report.reporter.full_name}</span>
@@ -187,7 +187,7 @@ export default function AdminReportsPage() {
                             <h4 className="font-medium text-sm text-gray-700 mb-2">Reported User</h4>
                             <div className="flex items-center space-x-2">
                               <Avatar className="w-6 h-6">
-                                <AvatarImage src={report.reported_user.avatar_url || "/placeholder.svg"} />
+                                <AvatarImage src={report.reported_user.avatar_url || "/placeholder-user.jpg"} />
                                 <AvatarFallback>{report.reported_user.full_name?.charAt(0)}</AvatarFallback>
                               </Avatar>
                               <span className="text-sm">{report.reported_user.full_name}</span>

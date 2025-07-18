@@ -129,6 +129,15 @@ export default function ProfilePage() {
       }
     }
 
+    const avatarImageFile = formData.get("avatar_image") as File
+    if (avatarImageFile && avatarImageFile.size > 0) {
+      try {
+        updates.avatarImage = await handleFileUpload(avatarImageFile)
+      } catch (error) {
+        toast({ title: "Error", description: "Failed to upload profile picture", variant: "destructive" })
+        return
+      }
+    }
     updateProfileMutation.mutate(updates)
   }
 
@@ -162,7 +171,7 @@ export default function ProfilePage() {
         <CardContent className="p-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-end space-y-4 sm:space-y-0 sm:space-x-6 -mt-16">
             <Avatar className="w-32 h-32 border-4 border-white">
-              <AvatarImage src={profile?.avatar_url || "/placeholder.svg"} />
+              <AvatarImage src={profile?.avatar_url || "/placeholder-user.jpg"} />
               <AvatarFallback className="text-2xl">
                 {profile?.full_name?.charAt(0) || profile?.email?.charAt(0)}
               </AvatarFallback>
@@ -253,6 +262,10 @@ export default function ProfilePage() {
                         <Label htmlFor="cover_image">Cover Image</Label>
                         <Input id="cover_image" name="cover_image" type="file" accept="image/*" />
                       </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="avatar_image">Profile Picture</Label>
+                        <Input id="avatar_image" name="avatar_image" type="file" accept="image/*" />
+                      </div>
                       <div className="flex justify-end space-x-2">
                         <Button type="button" variant="outline" onClick={() => setEditDialogOpen(false)}>
                           Cancel
@@ -335,7 +348,7 @@ export default function ProfilePage() {
                 <CardContent className="p-4">
                   <div className="flex items-center space-x-3">
                     <Avatar>
-                      <AvatarImage src={group.avatar_url || "/placeholder.svg"} />
+                      <AvatarImage src={group.avatar_url || "/placeholder-user.jpg"} />
                       <AvatarFallback>{group.name?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>

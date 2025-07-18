@@ -36,6 +36,8 @@ export async function POST(request: Request, { params }: { params: { id: string 
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  // Update group member count
+  await supabase.rpc('increment_group_members', { group_id: groupId })
   return NextResponse.json({ success: true })
 }
 
@@ -57,5 +59,7 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 
+  // Update group member count
+  await supabase.rpc('decrement_group_members', { group_id: groupId })
   return NextResponse.json({ success: true })
 }

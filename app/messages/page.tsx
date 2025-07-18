@@ -165,7 +165,7 @@ export default function MessagesPage() {
                       >
                         <div className="relative">
                           <Avatar>
-                            <AvatarImage src={conversation.participant.avatar_url || "/placeholder.svg"} />
+                            <AvatarImage src={conversation.participant.avatar_url || "/placeholder-user.jpg"} />
                             <AvatarFallback>{conversation.participant.full_name?.charAt(0) || "U"}</AvatarFallback>
                           </Avatar>
                           {conversation.participant.status === "online" && (
@@ -203,7 +203,7 @@ export default function MessagesPage() {
                 <div className="p-4 border-b flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Avatar>
-                      <AvatarImage src={selectedConversationData?.participant.avatar_url || "/placeholder.svg"} />
+                      <AvatarImage src={selectedConversationData?.participant.avatar_url || "/placeholder-user.jpg"} />
                       <AvatarFallback>
                         {selectedConversationData?.participant.full_name?.charAt(0) || "U"}
                       </AvatarFallback>

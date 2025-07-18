@@ -212,7 +212,7 @@ export default function AdminSupportPage() {
                         <div className="flex items-center space-x-4 text-sm text-gray-500">
                           <div className="flex items-center space-x-1">
                             <Avatar className="w-4 h-4">
-                              <AvatarImage src={ticket.user.avatar_url || "/placeholder.svg"} />
+                              <AvatarImage src={ticket.user.avatar_url || "/placeholder-user.jpg"} />
                               <AvatarFallback>{ticket.user.full_name?.charAt(0)}</AvatarFallback>
                             </Avatar>
                             <span>{ticket.user.full_name}</span>
@@ -253,7 +253,7 @@ export default function AdminSupportPage() {
                             <div className="p-4 bg-gray-50 rounded-lg">
                               <div className="flex items-center space-x-2 mb-2">
                                 <Avatar className="w-6 h-6">
-                                  <AvatarImage src={ticket.user.avatar_url || "/placeholder.svg"} />
+                                  <AvatarImage src={ticket.user.avatar_url || "/placeholder-user.jpg"} />
                                   <AvatarFallback>{ticket.user.full_name?.charAt(0)}</AvatarFallback>
                                 </Avatar>
                                 <span className="font-medium">{ticket.user.full_name}</span>
@@ -282,7 +282,7 @@ export default function AdminSupportPage() {
                                     >
                                       <div className="flex items-center space-x-2 mb-1">
                                         <Avatar className="w-4 h-4">
-                                          <AvatarImage src={message.sender.avatar_url || "/placeholder.svg"} />
+                                          <AvatarImage src={message.sender.avatar_url || "/placeholder-user.jpg"} />
                                           <AvatarFallback>{message.sender.full_name?.charAt(0)}</AvatarFallback>
                                         </Avatar>
                                         <span className="text-xs font-medium">{message.sender.full_name}</span>

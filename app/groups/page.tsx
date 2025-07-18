@@ -3,13 +3,16 @@
 import { useState } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { CreateGroupDialog } from "@/components/create-group-dialog"
 import { Search, Users, Plus, Filter } from "lucide-react"
+import { toast } from "@/hooks/use-toast"
 
 interface Group {
   id: string
@@ -26,6 +29,7 @@ export default function GroupsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const supabase = createClientComponentClient()
+  const queryClient = useQueryClient()
 
   const { data: groups, isLoading } = useQuery({
     queryKey: ["groups", searchTerm, selectedCategory],
@@ -70,10 +74,7 @@ export default function GroupsPage() {
     <div className="container mx-auto px-4 py-6">
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold">Groups</h1>
-        <Button>
-          <Plus className="w-4 h-4 mr-2" />
-          Create Group
-        </Button>
+        <CreateGroupDialog />
       </div>
 
       <Tabs defaultValue="discover" className="space-y-6">
@@ -157,7 +158,6 @@ export default function GroupsPage() {
                         <Badge variant="secondary">{group.category}</Badge>
                         <Badge variant={group.privacy === "public" ? "default" : "outline"}>{group.privacy}</Badge>
                       </div>
-                      <Button size="sm">Join</Button>
                     </div>
                   </CardContent>
                 </Card>
@@ -173,7 +173,7 @@ export default function GroupsPage() {
                 <CardContent className="p-6">
                   <div className="flex items-center space-x-4 mb-4">
                     <Avatar className="w-12 h-12">
-                      <AvatarImage src={group.avatar_url || "/placeholder.svg"} />
+                      <AvatarImage src={group.avatar_url || "/placeholder-user.jpg"} />
                       <AvatarFallback>{group.name.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>

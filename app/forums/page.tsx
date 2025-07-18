@@ -170,7 +170,7 @@ export default function ForumsPage() {
 
                       <div className="flex items-center space-x-2">
                         <Avatar className="w-5 h-5">
-                          <AvatarImage src={forum.creator?.avatar_url || "/placeholder.svg"} />
+                          <AvatarImage src={forum.creator?.avatar_url || "/placeholder-user.jpg"} />
                           <AvatarFallback>{forum.creator?.full_name?.charAt(0)}</AvatarFallback>
                         </Avatar>
                         <span>Created by {forum.creator?.full_name}</span>

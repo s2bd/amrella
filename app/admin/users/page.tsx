@@ -182,7 +182,7 @@ export default function AdminUsersPage() {
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4">
                     <Avatar className="w-12 h-12">
-                      <AvatarImage src={user.avatar_url || "/placeholder.svg"} />
+                      <AvatarImage src={user.avatar_url || "/placeholder-user.jpg"} />
                       <AvatarFallback>{user.full_name?.charAt(0) || user.email?.charAt(0)}</AvatarFallback>
                     </Avatar>
                     <div>
@@ -229,7 +229,7 @@ export default function AdminUsersPage() {
             <form onSubmit={handleUpdateUser} className="space-y-4">
               <div className="flex items-center space-x-4 p-4 bg-gray-50 rounded-lg">
                 <Avatar>
-                  <AvatarImage src={selectedUser.avatar_url || "/placeholder.svg"} />
+                  <AvatarImage src={selectedUser.avatar_url || "/placeholder-user.jpg"} />
                   <AvatarFallback>{selectedUser.full_name?.charAt(0) || selectedUser.email?.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>

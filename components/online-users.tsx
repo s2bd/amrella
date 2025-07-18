@@ -64,7 +64,7 @@ export function OnlineUsers() {
           <div key={user.id} className="flex items-center space-x-3">
             <div className="relative">
               <Avatar className="w-8 h-8">
-                <AvatarImage src={user.avatar_url || "/placeholder.svg"} />
+                <AvatarImage src={user.avatar_url || "/placeholder-user.jpg"} />
                 <AvatarFallback>{user.full_name?.charAt(0) || "U"}</AvatarFallback>
               </Avatar>
               <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>

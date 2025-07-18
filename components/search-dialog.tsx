@@ -91,7 +91,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                                 onClick={() => onOpenChange(false)}
                               >
                                 <Avatar className="w-8 h-8">
-                                  <AvatarImage src={user.avatar_url || "/placeholder.svg"} />
+                                  <AvatarImage src={user.avatar_url || "/placeholder-user.jpg"} />
                                   <AvatarFallback>{user.full_name?.charAt(0) || "U"}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
@@ -126,7 +126,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                                 onClick={() => onOpenChange(false)}
                               >
                                 <Avatar className="w-8 h-8">
-                                  <AvatarImage src={group.avatar_url || "/placeholder.svg"} />
+                                  <AvatarImage src={group.avatar_url || "/placeholder-user.jpg"} />
                                   <AvatarFallback>{group.name?.charAt(0) || "G"}</AvatarFallback>
                                 </Avatar>
                                 <div className="flex-1">
@@ -154,7 +154,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                               <div key={post.id} className="p-2 hover:bg-gray-50 rounded-lg">
                                 <div className="flex items-center space-x-2 mb-1">
                                   <Avatar className="w-6 h-6">
-                                    <AvatarImage src={post.profiles?.avatar_url || "/placeholder.svg"} />
+                                    <AvatarImage src={post.profiles?.avatar_url || "/placeholder-user.jpg"} />
                                     <AvatarFallback>{post.profiles?.full_name?.charAt(0) || "U"}</AvatarFallback>
                                   </Avatar>
                                   <span className="text-sm font-medium">{post.profiles?.full_name}</span>
@@ -180,7 +180,7 @@ export function SearchDialog({ open, onOpenChange }: SearchDialogProps) {
                             onClick={() => onOpenChange(false)}
                           >
                             <Avatar className="w-10 h-10">
-                              <AvatarImage src={user.avatar_url || "/placeholder.svg"} />
+                              <AvatarImage src={user.avatar_url || "/placeholder-user.jpg"} />
                               <AvatarFallback>{user.full_name?.charAt(0) || "U"}</AvatarFallback>
                             </Avatar>
                             <div className="flex-1">

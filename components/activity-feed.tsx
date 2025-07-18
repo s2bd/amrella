@@ -7,6 +7,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
+import { HashtagMentionInput } from "@/components/hashtag-mention-input"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
@@ -202,7 +203,11 @@ export function ActivityFeed() {
       <Card>
         <CardContent className="p-4">
           <div className="space-y-4">
-            <Textarea placeholder="What's on your mind?" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
+            <HashtagMentionInput 
+              value={newPost} 
+              onChange={setNewPost}
+              placeholder="What's on your mind? Use #hashtags and @mentions"
+            />
             {selectedFile && (
               <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
                 <span className="text-sm text-gray-600">{selectedFile.name}</span>
@@ -279,7 +284,7 @@ export function ActivityFeed() {
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
                     <Avatar>
-                      <AvatarImage src={post.profiles?.avatar_url || "/placeholder.svg"} />
+                      <AvatarImage src={post.profiles?.avatar_url || "/placeholder-user.jpg"} />
                       <AvatarFallback>{post.profiles?.full_name?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
                     <div>
