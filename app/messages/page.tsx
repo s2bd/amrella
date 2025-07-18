@@ -43,6 +43,17 @@ export default function MessagesPage() {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const supabase = createClientComponentClient()
 
+  // Auto-select conversation from URL parameter
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const urlParams = new URLSearchParams(window.location.search)
+      const conversationId = urlParams.get('conversation')
+      if (conversationId) {
+        setSelectedConversation(conversationId)
+      }
+    }
+  }, [])
+
   const { data: conversations, isLoading: conversationsLoading } = useQuery({
     queryKey: ["conversations", searchTerm],
     queryFn: async () => {

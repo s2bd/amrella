@@ -115,8 +115,7 @@ export function Navigation() {
     { href: "/events", icon: Calendar, label: "Events" },
     { href: "/courses", icon: BookOpen, label: "Courses" },
     { href: "/forums", icon: MessageCircle, label: "Forums" },
-    { href: "/admin", icon: Settings, label: "Admin", adminOnly: true },
-    { href: "/support", icon: MessageCircle, label: "Support", adminOnly: true },
+    { href: "/support", icon: MessageCircle, label: "Support" },
   ]
 
   return (
@@ -142,7 +141,6 @@ export function Navigation() {
           {/* Navigation Items */}
           <div className="hidden md:flex items-center space-x-1">
             {navItems
-              .filter((item) => !item.adminOnly || ["admin", "super_admin"].includes(userRole))
               .map((item) => (
                 <Link key={item.href} href={item.href}>
                   <Button
@@ -155,6 +153,18 @@ export function Navigation() {
                   </Button>
                 </Link>
               ))}
+            {["admin", "super_admin"].includes(userRole) && (
+              <Link href="/admin">
+                <Button
+                  variant={pathname === "/admin" ? "default" : "ghost"}
+                  size="sm"
+                  className="flex items-center space-x-2"
+                >
+                  <Settings className="w-4 h-4" />
+                  <span>Admin</span>
+                </Button>
+              </Link>
+            )}
           </div>
 
           {/* User Menu */}
@@ -237,11 +247,25 @@ export function Navigation() {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
+                    <Link href="/support" className="flex items-center">
+                      <MessageCircle className="mr-2 h-4 w-4" />
+                      Help & Support
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link href="/settings" className="flex items-center">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
                     </Link>
                   </DropdownMenuItem>
+                  {["admin", "super_admin"].includes(userRole) && (
+                    <DropdownMenuItem asChild>
+                      <Link href="/admin" className="flex items-center">
+                        <Settings className="mr-2 h-4 w-4" />
+                        Admin Panel
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={handleSignOut}>
                     <LogOut className="mr-2 h-4 w-4" />

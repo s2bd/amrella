@@ -15,7 +15,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { VerifiedBadge } from "@/components/verified-badge"
-import { MapPin, Calendar, LinkIcon, Users, Heart, MessageCircle, UserPlus, UserMinus, Edit } from "lucide-react"
+import { MapPin, Calendar, LinkIcon, Users, Heart, MessageCircle, UserPlus, UserMinus, Edit, Send } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { toast } from "@/hooks/use-toast"
 
@@ -93,6 +93,21 @@ export default function ProfilePage() {
       toast({ title: "Success", description: "Profile updated successfully" })
     },
   })
+
+  const startConversation = async () => {
+    try {
+      const response = await fetch("/api/messages/conversations", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ participantId: userId }),
+      })
+      if (!response.ok) throw new Error("Failed to start conversation")
+      const data = await response.json()
+      window.location.href = `/messages?conversation=${data.conversationId}`
+    } catch (error) {
+      toast({ title: "Error", description: "Failed to start conversation", variant: "destructive" })
+    }
+  }
 
   const handleFileUpload = async (file: File) => {
     const formData = new FormData()
@@ -294,6 +309,10 @@ export default function ProfilePage() {
                       Follow
                     </>
                   )}
+                </Button>
+                <Button onClick={startConversation} variant="outline">
+                  <Send className="w-4 h-4 mr-2" />
+                  Message
                 </Button>
               )}
             </div>

@@ -155,13 +155,13 @@ export default function SupportPage() {
       <div className="flex items-center justify-between mb-6">
         <div>
           <h1 className="text-3xl font-bold">Support Center</h1>
-          <p className="text-gray-600">Get help and manage support tickets</p>
+          <p className="text-gray-600">Get help with any questions or issues you may have</p>
         </div>
         <Dialog open={newTicketOpen} onOpenChange={setNewTicketOpen}>
           <DialogTrigger asChild>
             <Button>
               <Plus className="w-4 h-4 mr-2" />
-              New Ticket
+              Contact Support
             </Button>
           </DialogTrigger>
           <DialogContent className="sm:max-w-md">
@@ -228,6 +228,7 @@ export default function SupportPage() {
       <Tabs defaultValue="my-tickets" className="space-y-6">
         <TabsList>
           <TabsTrigger value="my-tickets">My Tickets</TabsTrigger>
+          <TabsTrigger value="faq">FAQ</TabsTrigger>
           {["admin", "super_admin"].includes(userRole) && <TabsTrigger value="all-tickets">All Tickets</TabsTrigger>}
         </TabsList>
 
@@ -307,6 +308,60 @@ export default function SupportPage() {
               )}
             </div>
           )}
+        </TabsContent>
+
+        <TabsContent value="faq">
+          <div className="space-y-6">
+            <Card>
+              <CardContent className="p-6">
+                <h3 className="text-lg font-semibold mb-4">Frequently Asked Questions</h3>
+                
+                <div className="space-y-6">
+                  <div>
+                    <h4 className="font-medium mb-2">How do I create a group?</h4>
+                    <p className="text-gray-600 text-sm">
+                      Navigate to the Groups page and click "Create Group". Fill in the required information including name, description, and category.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2">How do I upload a profile picture?</h4>
+                    <p className="text-gray-600 text-sm">
+                      Go to your profile page and click "Edit Profile". You can upload both a profile picture and cover image.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2">How do I message another user?</h4>
+                    <p className="text-gray-600 text-sm">
+                      Visit their profile page and click the "Message" button, or go to the Messages section to start a new conversation.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2">How do I report inappropriate content?</h4>
+                    <p className="text-gray-600 text-sm">
+                      Click the three-dot menu on any post and select "Report post". Choose the appropriate reason and provide additional details.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2">How do I join a course?</h4>
+                    <p className="text-gray-600 text-sm">
+                      Browse courses in the Courses section and click "Enroll" on any course you're interested in.
+                    </p>
+                  </div>
+                  
+                  <div>
+                    <h4 className="font-medium mb-2">Can I delete my account?</h4>
+                    <p className="text-gray-600 text-sm">
+                      Yes, you can request account deletion by contacting our support team. Please note that this action is irreversible.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         {["admin", "super_admin"].includes(userRole) && (

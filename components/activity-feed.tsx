@@ -1,7 +1,6 @@
 "use client"
 
-import { useState } from "react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { useState, useEffect } from "react"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
@@ -14,7 +13,7 @@ import { Input } from "@/components/ui/input"
 import { Heart, MessageCircle, Share2, MoreHorizontal, ImageIcon, Video } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { VerifiedBadge } from "@/components/verified-badge"
-import { ReportDialog } from "@/components/report-dialog"
+import { PostActionsMenu } from "@/components/post-actions-menu"
 import { toast } from "@/hooks/use-toast"
 
 interface Post {
@@ -55,8 +54,21 @@ export function ActivityFeed() {
   const [showComments, setShowComments] = useState<string | null>(null)
   const [newComment, setNewComment] = useState("")
   const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
+  const [currentUserId, setCurrentUserId] = useState<string>("")
   const supabase = createClientComponentClient()
   const queryClient = useQueryClient()
+  const router = useRouter()
+
+  // Get current user ID
+  useState(() => {
+    const getCurrentUser = async () => {
+      const { data: { session } } = await supabase.auth.getSession()
+      if (session) {
+        setCurrentUserId(session.user.id)
+      }
+    }
+    getCurrentUser()
+  }, [supabase])
 
   const {
     data: posts,
@@ -283,13 +295,18 @@ export function ActivityFeed() {
                 {/* Post Header */}
                 <div className="flex items-center justify-between mb-4">
                   <div className="flex items-center space-x-3">
-                    <Avatar>
+                    <Avatar className="cursor-pointer" onClick={() => router.push(`/profile/${post.user_id}`)}>
                       <AvatarImage src={post.profiles?.avatar_url || "/placeholder-user.jpg"} />
                       <AvatarFallback>{post.profiles?.full_name?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
                     <div>
                       <div className="flex items-center space-x-1">
-                        <p className="font-medium">{post.profiles?.full_name || "Anonymous"}</p>
+                        <p 
+                          className="font-medium cursor-pointer hover:underline" 
+                          onClick={() => router.push(`/profile/${post.user_id}`)}
+                        >
+                          {post.profiles?.full_name || "Anonymous"}
+                        </p>
                         <VerifiedBadge
                           isVerified={post.profiles?.is_verified || false}
                           verificationType={post.profiles?.verification_type}
@@ -302,9 +319,11 @@ export function ActivityFeed() {
                   </div>
                   <div className="flex items-center space-x-2">
                     {post.type !== "text" && <Badge variant="secondary">{post.type}</Badge>}
-                    <Button variant="ghost" size="sm">
-                      <MoreHorizontal className="w-4 h-4" />
-                    </Button>
+                    <PostActionsMenu 
+                      postId={post.id} 
+                      postUserId={post.user_id}
+                      currentUserId={currentUserId}
+                    />
                   </div>
                 </div>
 
@@ -395,7 +414,6 @@ export function ActivityFeed() {
                       <Share2 className="w-4 h-4" />
                     </Button>
                   </div>
-                  <ReportDialog reportedPostId={post.id} reportedUserId={post.user_id} />
                 </div>
               </CardContent>
             </Card>

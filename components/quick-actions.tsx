@@ -1,6 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
-import { Users, Calendar, BookOpen, MessageCircle, Video, FileText } from "lucide-react"
+import { Users, Calendar, BookOpen, MessageCircle } from "lucide-react"
 
 export function QuickActions() {
   const actions = [
