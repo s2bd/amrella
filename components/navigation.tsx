@@ -213,7 +213,7 @@ export function Navigation() {
                 <DropdownMenuTrigger asChild>
                   <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                      <AvatarImage src={profile?.avatar_url || user.user_metadata?.avatar_url || "/placeholder.svg"} />
+                      <AvatarImage src={profile?.avatar_url || user.user_metadata?.avatar_url || "/placeholder-user.jpg"} />
                       <AvatarFallback>
                         {profile?.full_name?.charAt(0) ||
                           user.user_metadata?.full_name?.charAt(0) ||

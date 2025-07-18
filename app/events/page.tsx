@@ -157,7 +157,7 @@ export default function EventsPage() {
                   <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 relative">
                     {event.cover_url && (
                       <img
-                        src={event.cover_url || "/placeholder.svg"}
+                        src={event.cover_url || "/placeholder-user.jpg"}
                         alt={event.title}
                         className="w-full h-full object-cover"
                       />
@@ -205,7 +205,7 @@ export default function EventsPage() {
                       <div className="flex items-center justify-between pt-4 border-t">
                         <div className="flex items-center space-x-2">
                           <Avatar className="w-6 h-6">
-                            <AvatarImage src={event.organizer.avatar_url || "/placeholder.svg"} />
+                            <AvatarImage src={event.organizer.avatar_url || "/placeholder-user.jpg"} />
                             <AvatarFallback>{event.organizer.full_name?.charAt(0)}</AvatarFallback>
                           </Avatar>
                           <span className="text-sm text-gray-600">{event.organizer.full_name}</span>
@@ -229,7 +229,7 @@ export default function EventsPage() {
                 <div className="h-48 bg-gradient-to-r from-blue-500 to-purple-600 relative">
                   {event.cover_url && (
                     <img
-                      src={event.cover_url || "/placeholder.svg"}
+                      src={event.cover_url || "/placeholder-user.jpg"}
                       alt={event.title}
                       className="w-full h-full object-cover"
                     />

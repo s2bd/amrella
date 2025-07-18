@@ -67,7 +67,7 @@ export function TrendingGroups() {
           <div key={group.id} className="flex items-center justify-between">
             <div className="flex items-center space-x-3">
               <Avatar>
-                <AvatarImage src={group.avatar_url || "/placeholder.svg"} />
+                <AvatarImage src={group.avatar_url || "/placeholder-user.jpg"} />
                 <AvatarFallback>{group.name.charAt(0)}</AvatarFallback>
               </Avatar>
               <div>

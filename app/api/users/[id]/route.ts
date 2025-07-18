@@ -69,6 +69,12 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     delete updates.coverImage
   }
 
+  // Handle avatar upload
+  if (updates.avatarImage) {
+    const base64Data = updates.avatarImage.split(",")[1]
+    updates.avatar_url = `data:image/jpeg;base64,${base64Data}`
+    delete updates.avatarImage
+  }
   const { data: profile, error } = await supabase.from("profiles").update(updates).eq("id", userId).select().single()
 
   if (error) {
