@@ -2,16 +2,19 @@
 
 import { useState } from "react"
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { Card, CardContent } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
 import { Heart, MessageCircle, Share2, MoreHorizontal, ImageIcon, Video, FileText } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { VerifiedBadge } from "@/components/verified-badge"
 import { ReportDialog } from "@/components/report-dialog"
+import { toast } from "@/hooks/use-toast"
 
 interface Post {
   id: string
@@ -21,6 +24,9 @@ interface Post {
   likes_count: number
   comments_count: number
   type: "text" | "image" | "video" | "course"
+  media_data?: any
+  media_type?: string
+  media_filename?: string
   profiles: {
     full_name: string
     avatar_url: string
@@ -29,10 +35,27 @@ interface Post {
   }
 }
 
+interface Comment {
+  id: string
+  content: string
+  created_at: string
+  user_id: string
+  profiles: {
+    full_name: string
+    avatar_url: string
+    is_verified: boolean
+    verification_type: string
+  }
+}
 export function ActivityFeed() {
   const [newPost, setNewPost] = useState("")
   const [isPosting, setIsPosting] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [showComments, setShowComments] = useState<string | null>(null)
+  const [newComment, setNewComment] = useState("")
+  const [likedPosts, setLikedPosts] = useState<Set<string>>(new Set())
   const supabase = createClientComponentClient()
+  const queryClient = useQueryClient()
 
   const {
     data: posts,
@@ -41,59 +64,132 @@ export function ActivityFeed() {
   } = useQuery({
     queryKey: ["posts"],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from("posts")
-        .select(`
-          *,
-          profiles (
-            full_name,
-            avatar_url,
-            is_verified,
-            verification_type
-          )
-        `)
-        .order("created_at", { ascending: false })
-        .limit(20)
-
-      if (error) throw error
-      return data as Post[]
+      const response = await fetch("/api/posts")
+      if (!response.ok) throw new Error("Failed to fetch posts")
+      const data = await response.json()
+      return data.posts as Post[]
     },
   })
 
-  const handleCreatePost = async () => {
-    if (!newPost.trim()) return
+  const { data: comments } = useQuery({
+    queryKey: ["comments", showComments],
+    queryFn: async () => {
+      if (!showComments) return []
+      const response = await fetch(`/api/posts/${showComments}/comments`)
+      if (!response.ok) throw new Error("Failed to fetch comments")
+      const data = await response.json()
+      return data.comments as Comment[]
+    },
+    enabled: !!showComments,
+  })
 
-    setIsPosting(true)
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+  const createPostMutation = useMutation({
+    mutationFn: async (postData: any) => {
+      const response = await fetch("/api/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(postData),
+      })
+      if (!response.ok) throw new Error("Failed to create post")
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["posts"] })
+      setNewPost("")
+      setSelectedFile(null)
+      toast({ title: "Success", description: "Post created successfully" })
+    },
+    onError: () => {
+      toast({ title: "Error", description: "Failed to create post", variant: "destructive" })
+    },
+  })
 
-    const { error } = await supabase.from("posts").insert({
-      content: newPost,
-      user_id: user?.id,
-      type: "text",
+  const likePostMutation = useMutation({
+    mutationFn: async (postId: string) => {
+      const response = await fetch(`/api/posts/${postId}/like`, {
+        method: "POST",
+      })
+      if (!response.ok) throw new Error("Failed to like post")
+      return response.json()
+    },
+    onSuccess: (data, postId) => {
+      const newLikedPosts = new Set(likedPosts)
+      if (data.liked) {
+        newLikedPosts.add(postId)
+      } else {
+        newLikedPosts.delete(postId)
+      }
+      setLikedPosts(newLikedPosts)
+      queryClient.invalidateQueries({ queryKey: ["posts"] })
+    },
+  })
+
+  const commentMutation = useMutation({
+    mutationFn: async ({ postId, content }: { postId: string; content: string }) => {
+      const response = await fetch(`/api/posts/${postId}/comments`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ content }),
+      })
+      if (!response.ok) throw new Error("Failed to add comment")
+      return response.json()
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["comments", showComments] })
+      queryClient.invalidateQueries({ queryKey: ["posts"] })
+      setNewComment("")
+    },
+  })
+  const handleFileUpload = async (file: File) => {
+    const formData = new FormData()
+    formData.append("file", file)
+
+    const response = await fetch("/api/upload", {
+      method: "POST",
+      body: formData,
     })
 
-    if (!error) {
-      setNewPost("")
-      refetch()
+    if (!response.ok) throw new Error("Upload failed")
+    const result = await response.json()
+    return `data:${result.data.type};base64,${result.data.blob}`
+  }
+
+  const handleCreatePost = async () => {
+    if (!newPost.trim() && !selectedFile) return
+
+    let mediaData = null
+    let mediaType = null
+    let mediaFilename = null
+    let postType = "text"
+
+    if (selectedFile) {
+      try {
+        mediaData = await handleFileUpload(selectedFile)
+        mediaType = selectedFile.type
+        mediaFilename = selectedFile.name
+        postType = selectedFile.type.startsWith("image/") ? "image" : selectedFile.type.startsWith("video/") ? "video" : "text"
+      } catch (error) {
+        toast({ title: "Error", description: "Failed to upload file", variant: "destructive" })
+        return
+      }
     }
-    setIsPosting(false)
+
+    createPostMutation.mutate({
+      content: newPost,
+      type: postType,
+      mediaData,
+      mediaType,
+      mediaFilename,
+    })
   }
 
   const handleLike = async (postId: string) => {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    likePostMutation.mutate(postId)
+  }
 
-    const { error } = await supabase.from("post_likes").upsert({
-      post_id: postId,
-      user_id: user?.id,
-    })
-
-    if (!error) {
-      refetch()
-    }
+  const handleComment = (postId: string) => {
+    if (!newComment.trim()) return
+    commentMutation.mutate({ postId, content: newComment })
   }
 
   return (
@@ -104,23 +200,54 @@ export function ActivityFeed() {
           <div className="space-y-4">
             <Textarea
               placeholder="What's on your mind?"
+              {selectedFile && (
+                <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
+                  <span className="text-sm text-gray-600">{selectedFile.name}</span>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedFile(null)}
+                  >
+                    Remove
+                  </Button>
+                </div>
+              )}
               value={newPost}
               onChange={(e) => setNewPost(e.target.value)}
-              className="min-h-[100px] resize-none"
+                  <Button variant="ghost" size="sm" asChild>
+                    <label>
             />
             <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <Button variant="ghost" size="sm">
+                      <Input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                      />
+                    </label>
+                  </Button>
+                  <Button variant="ghost" size="sm" asChild>
+                    <label>
                   <ImageIcon className="w-4 h-4 mr-2" />
                   Photo
-                </Button>
+                      <Input
+                        type="file"
+                        accept="video/*"
+                        className="hidden"
+                        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                      />
+                    </label>
+                  </Button>
                 <Button variant="ghost" size="sm">
                   <Video className="w-4 h-4 mr-2" />
                   Video
                 </Button>
                 <Button variant="ghost" size="sm">
-                  <FileText className="w-4 h-4 mr-2" />
-                  Article
+                <Button 
+                  onClick={handleCreatePost} 
+                  disabled={(!newPost.trim() && !selectedFile) || createPostMutation.isPending}
+                >
+                  {createPostMutation.isPending ? "Posting..." : "Post"}
                 </Button>
               </div>
               <Button onClick={handleCreatePost} disabled={!newPost.trim() || isPosting}>
@@ -188,6 +315,20 @@ export function ActivityFeed() {
                 {/* Post Content */}
                 <div className="mb-4">
                   <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
+                  {post.media_data && post.media_type?.startsWith("image/") && (
+                    <img
+                      src={post.media_data}
+                      alt={post.media_filename || "Post image"}
+                      className="mt-3 rounded-lg max-w-full h-auto"
+                    />
+                  )}
+                  {post.media_data && post.media_type?.startsWith("video/") && (
+                    <video
+                      src={post.media_data}
+                      controls
+                      className="mt-3 rounded-lg max-w-full h-auto"
+                    />
+                  )}
                 </div>
 
                 {/* Post Actions */}
@@ -197,15 +338,69 @@ export function ActivityFeed() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleLike(post.id)}
-                      className="flex items-center space-x-2"
+                      className={`flex items-center space-x-2 ${
+                        likedPosts.has(post.id) ? "text-red-500" : ""
+                      }`}
+                      disabled={likePostMutation.isPending}
                     >
-                      <Heart className="w-4 h-4" />
+                      <Heart className={`w-4 h-4 ${likedPosts.has(post.id) ? "fill-current" : ""}`} />
                       <span>{post.likes_count || 0}</span>
                     </Button>
-                    <Button variant="ghost" size="sm" className="flex items-center space-x-2">
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          variant="ghost" 
+                          size="sm" 
+                          className="flex items-center space-x-2"
+                          onClick={() => setShowComments(post.id)}
+                        >
                       <MessageCircle className="w-4 h-4" />
                       <span>{post.comments_count || 0}</span>
-                    </Button>
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Comments</DialogTitle>
+                        </DialogHeader>
+                        <div className="space-y-4 max-h-96 overflow-y-auto">
+                          {comments?.map((comment) => (
+                            <div key={comment.id} className="flex space-x-3">
+                              <Avatar className="w-8 h-8">
+                                <AvatarImage src={comment.profiles?.avatar_url || "/placeholder.svg"} />
+                                <AvatarFallback>{comment.profiles?.full_name?.charAt(0) || "U"}</AvatarFallback>
+                              </Avatar>
+                              <div className="flex-1">
+                                <div className="flex items-center space-x-2">
+                                  <p className="font-medium text-sm">{comment.profiles?.full_name}</p>
+                                  <VerifiedBadge
+                                    isVerified={comment.profiles?.is_verified || false}
+                                    verificationType={comment.profiles?.verification_type}
+                                  />
+                                </div>
+                                <p className="text-sm text-gray-900">{comment.content}</p>
+                                <p className="text-xs text-gray-500">
+                                  {formatDistanceToNow(new Date(comment.created_at), { addSuffix: true })}
+                                </p>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex space-x-2">
+                          <Input
+                            placeholder="Write a comment..."
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            onKeyPress={(e) => e.key === "Enter" && handleComment(post.id)}
+                          />
+                          <Button 
+                            onClick={() => handleComment(post.id)}
+                            disabled={!newComment.trim() || commentMutation.isPending}
+                          >
+                            Post
+                          </Button>
+                        </div>
+                      </DialogContent>
+                    </Dialog>
                     <Button variant="ghost" size="sm">
                       <Share2 className="w-4 h-4" />
                     </Button>
