@@ -293,27 +293,29 @@ export default function ProfilePage() {
                   </DialogContent>
                 </Dialog>
               ) : (
-                <Button
-                  onClick={() => followMutation.mutate(isFollowing ? "unfollow" : "follow")}
-                  disabled={followMutation.isPending}
-                  variant={isFollowing ? "outline" : "default"}
-                >
-                  {isFollowing ? (
-                    <>
-                      <UserMinus className="w-4 h-4 mr-2" />
-                      Unfollow
-                    </>
-                  ) : (
-                    <>
-                      <UserPlus className="w-4 h-4 mr-2" />
-                      Follow
-                    </>
-                  )}
-                </Button>
-                <Button onClick={startConversation} variant="outline">
-                  <Send className="w-4 h-4 mr-2" />
-                  Message
-                </Button>
+                <>
+                  <Button
+                    onClick={() => followMutation.mutate(isFollowing ? "unfollow" : "follow")}
+                    disabled={followMutation.isPending}
+                    variant={isFollowing ? "outline" : "default"}
+                  >
+                    {isFollowing ? (
+                      <>
+                        <UserMinus className="w-4 h-4 mr-2" />
+                        Unfollow
+                      </>
+                    ) : (
+                      <>
+                        <UserPlus className="w-4 h-4 mr-2" />
+                        Follow
+                      </>
+                    )}
+                  </Button>
+                  <Button onClick={startConversation} variant="outline">
+                    <Send className="w-4 h-4 mr-2" />
+                    Message
+                  </Button>
+                </>
               )}
             </div>
           </div>
