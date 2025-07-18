@@ -135,11 +135,7 @@ export function Navigation() {
           <div className="flex-1 max-w-md mx-8">
             <div className="relative" onClick={() => setSearchOpen(true)}>
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-              <Input 
-                placeholder="Search users, groups, courses..." 
-                className="pl-10 cursor-pointer" 
-                readOnly
-              />
+              <Input placeholder="Search users, groups, courses..." className="pl-10 cursor-pointer" readOnly />
             </div>
           </div>
 
@@ -211,9 +207,6 @@ export function Navigation() {
                   )}
                 </DialogContent>
               </Dialog>
-                  </Badge>
-                )}
-              </Button>
 
               {/* User Dropdown */}
               <DropdownMenu>
@@ -222,7 +215,9 @@ export function Navigation() {
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={profile?.avatar_url || user.user_metadata?.avatar_url || "/placeholder.svg"} />
                       <AvatarFallback>
-                        {profile?.full_name?.charAt(0) || user.user_metadata?.full_name?.charAt(0) || user.email?.charAt(0)}
+                        {profile?.full_name?.charAt(0) ||
+                          user.user_metadata?.full_name?.charAt(0) ||
+                          user.email?.charAt(0)}
                       </AvatarFallback>
                     </Avatar>
                   </Button>
@@ -257,7 +252,6 @@ export function Navigation() {
             </div>
           )}
         </div>
-        
         <SearchDialog open={searchOpen} onOpenChange={setSearchOpen} />
       </div>
     </nav>

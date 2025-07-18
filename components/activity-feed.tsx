@@ -10,7 +10,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
-import { Heart, MessageCircle, Share2, MoreHorizontal, ImageIcon, Video, FileText } from "lucide-react"
+import { Heart, MessageCircle, Share2, MoreHorizontal, ImageIcon, Video } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
 import { VerifiedBadge } from "@/components/verified-badge"
 import { ReportDialog } from "@/components/report-dialog"
@@ -167,7 +167,11 @@ export function ActivityFeed() {
         mediaData = await handleFileUpload(selectedFile)
         mediaType = selectedFile.type
         mediaFilename = selectedFile.name
-        postType = selectedFile.type.startsWith("image/") ? "image" : selectedFile.type.startsWith("video/") ? "video" : "text"
+        postType = selectedFile.type.startsWith("image/")
+          ? "image"
+          : selectedFile.type.startsWith("video/")
+            ? "video"
+            : "text"
       } catch (error) {
         toast({ title: "Error", description: "Failed to upload file", variant: "destructive" })
         return
@@ -198,19 +202,11 @@ export function ActivityFeed() {
       <Card>
         <CardContent className="p-4">
           <div className="space-y-4">
-            <Textarea
-              placeholder="What's on your mind?"
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-            />
+            <Textarea placeholder="What's on your mind?" value={newPost} onChange={(e) => setNewPost(e.target.value)} />
             {selectedFile && (
               <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
                 <span className="text-sm text-gray-600">{selectedFile.name}</span>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedFile(null)}
-                >
+                <Button variant="ghost" size="sm" onClick={() => setSelectedFile(null)}>
                   Remove
                 </Button>
               </div>
@@ -242,68 +238,11 @@ export function ActivityFeed() {
                   </label>
                 </Button>
               </div>
-              <Button 
-                onClick={handleCreatePost} 
+              <Button
+                onClick={handleCreatePost}
                 disabled={(!newPost.trim() && !selectedFile) || createPostMutation.isPending}
               >
                 {createPostMutation.isPending ? "Posting..." : "Post"}
-              </Button>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-              {selectedFile && (
-                <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
-                  <span className="text-sm text-gray-600">{selectedFile.name}</span>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedFile(null)}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              )}
-              value={newPost}
-              onChange={(e) => setNewPost(e.target.value)}
-                  <Button variant="ghost" size="sm" asChild>
-                    <label>
-            />
-            <div className="flex items-center justify-between">
-                      <Input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                      />
-                    </label>
-                  </Button>
-                  <Button variant="ghost" size="sm" asChild>
-                    <label>
-                  <ImageIcon className="w-4 h-4 mr-2" />
-                  Photo
-                      <Input
-                        type="file"
-                        accept="video/*"
-                        className="hidden"
-                        onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
-                      />
-                    </label>
-                  </Button>
-                <Button variant="ghost" size="sm">
-                  <Video className="w-4 h-4 mr-2" />
-                  Video
-                </Button>
-                <Button variant="ghost" size="sm">
-                <Button 
-                  onClick={handleCreatePost} 
-                  disabled={(!newPost.trim() && !selectedFile) || createPostMutation.isPending}
-                >
-                  {createPostMutation.isPending ? "Posting..." : "Post"}
-                </Button>
-              </div>
-              <Button onClick={handleCreatePost} disabled={!newPost.trim() || isPosting}>
-                {isPosting ? "Posting..." : "Post"}
               </Button>
             </div>
           </div>
@@ -369,17 +308,13 @@ export function ActivityFeed() {
                   <p className="text-gray-900 whitespace-pre-wrap">{post.content}</p>
                   {post.media_data && post.media_type?.startsWith("image/") && (
                     <img
-                      src={post.media_data}
+                      src={post.media_data || "/placeholder.svg"}
                       alt={post.media_filename || "Post image"}
                       className="mt-3 rounded-lg max-w-full h-auto"
                     />
                   )}
                   {post.media_data && post.media_type?.startsWith("video/") && (
-                    <video
-                      src={post.media_data}
-                      controls
-                      className="mt-3 rounded-lg max-w-full h-auto"
-                    />
+                    <video src={post.media_data} controls className="mt-3 rounded-lg max-w-full h-auto" />
                   )}
                 </div>
 
@@ -390,9 +325,7 @@ export function ActivityFeed() {
                       variant="ghost"
                       size="sm"
                       onClick={() => handleLike(post.id)}
-                      className={`flex items-center space-x-2 ${
-                        likedPosts.has(post.id) ? "text-red-500" : ""
-                      }`}
+                      className={`flex items-center space-x-2 ${likedPosts.has(post.id) ? "text-red-500" : ""}`}
                       disabled={likePostMutation.isPending}
                     >
                       <Heart className={`w-4 h-4 ${likedPosts.has(post.id) ? "fill-current" : ""}`} />
@@ -400,14 +333,14 @@ export function ActivityFeed() {
                     </Button>
                     <Dialog>
                       <DialogTrigger asChild>
-                        <Button 
-                          variant="ghost" 
-                          size="sm" 
+                        <Button
+                          variant="ghost"
+                          size="sm"
                           className="flex items-center space-x-2"
                           onClick={() => setShowComments(post.id)}
                         >
-                      <MessageCircle className="w-4 h-4" />
-                      <span>{post.comments_count || 0}</span>
+                          <MessageCircle className="w-4 h-4" />
+                          <span>{post.comments_count || 0}</span>
                         </Button>
                       </DialogTrigger>
                       <DialogContent className="sm:max-w-md">
@@ -444,7 +377,7 @@ export function ActivityFeed() {
                             onChange={(e) => setNewComment(e.target.value)}
                             onKeyPress={(e) => e.key === "Enter" && handleComment(post.id)}
                           />
-                          <Button 
+                          <Button
                             onClick={() => handleComment(post.id)}
                             disabled={!newComment.trim() || commentMutation.isPending}
                           >
