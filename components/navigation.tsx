@@ -100,6 +100,7 @@ export function Navigation() {
       body: JSON.stringify({ notificationIds, markAsRead: true }),
     })
   }
+
   const handleSignOut = async () => {
     await supabase.auth.signOut()
     router.push("/auth")

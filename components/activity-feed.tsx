@@ -200,6 +200,58 @@ export function ActivityFeed() {
           <div className="space-y-4">
             <Textarea
               placeholder="What's on your mind?"
+              value={newPost}
+              onChange={(e) => setNewPost(e.target.value)}
+            />
+            {selectedFile && (
+              <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
+                <span className="text-sm text-gray-600">{selectedFile.name}</span>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedFile(null)}
+                >
+                  Remove
+                </Button>
+              </div>
+            )}
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Button variant="ghost" size="sm" asChild>
+                  <label>
+                    <ImageIcon className="w-4 h-4 mr-2" />
+                    Photo
+                    <Input
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                    />
+                  </label>
+                </Button>
+                <Button variant="ghost" size="sm" asChild>
+                  <label>
+                    <Video className="w-4 h-4 mr-2" />
+                    Video
+                    <Input
+                      type="file"
+                      accept="video/*"
+                      className="hidden"
+                      onChange={(e) => setSelectedFile(e.target.files?.[0] || null)}
+                    />
+                  </label>
+                </Button>
+              </div>
+              <Button 
+                onClick={handleCreatePost} 
+                disabled={(!newPost.trim() && !selectedFile) || createPostMutation.isPending}
+              >
+                {createPostMutation.isPending ? "Posting..." : "Post"}
+              </Button>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
               {selectedFile && (
                 <div className="flex items-center space-x-2 p-2 bg-gray-50 rounded">
                   <span className="text-sm text-gray-600">{selectedFile.name}</span>
