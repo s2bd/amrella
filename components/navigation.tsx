@@ -23,6 +23,7 @@ export function Navigation() {
   const supabase = createClientComponentClient()
   const router = useRouter()
   const pathname = usePathname()
+  const [userRole, setUserRole] = useState<string>("user")
 
   useEffect(() => {
     const getUser = async () => {
@@ -30,6 +31,21 @@ export function Navigation() {
         data: { session },
       } = await supabase.auth.getSession()
       setUser(session?.user)
+
+      if (session?.user?.id) {
+        const { data: profileData, error: profileError } = await supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
+          .single()
+
+        if (profileData) {
+          setUserRole(profileData.role || "user")
+        } else {
+          console.error("Error fetching profile:", profileError)
+          setUserRole("user")
+        }
+      }
     }
     getUser()
 
@@ -37,6 +53,21 @@ export function Navigation() {
       data: { subscription },
     } = supabase.auth.onAuthStateChange((event, session) => {
       setUser(session?.user)
+      if (session?.user?.id) {
+        supabase
+          .from("profiles")
+          .select("role")
+          .eq("id", session.user.id)
+          .single()
+          .then(({ data: profileData, error: profileError }) => {
+            if (profileData) {
+              setUserRole(profileData.role || "user")
+            } else {
+              console.error("Error fetching profile:", profileError)
+              setUserRole("user")
+            }
+          })
+      }
     })
 
     return () => subscription.unsubscribe()
@@ -55,6 +86,8 @@ export function Navigation() {
     { href: "/messages", icon: MessageCircle, label: "Messages" },
     { href: "/events", icon: Calendar, label: "Events" },
     { href: "/courses", icon: BookOpen, label: "Courses" },
+    { href: "/admin", icon: Settings, label: "Admin", adminOnly: true },
+    { href: "/support", icon: MessageCircle, label: "Support", adminOnly: true },
   ]
 
   return (
@@ -64,9 +97,9 @@ export function Navigation() {
           {/* Logo */}
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">SH</span>
+              <span className="text-white font-bold text-sm">AM</span>
             </div>
-            <span className="font-bold text-xl text-gray-900">SocialHub</span>
+            <span className="font-bold text-xl text-gray-900">Amrella</span>
           </Link>
 
           {/* Search */}
@@ -79,18 +112,20 @@ export function Navigation() {
 
           {/* Navigation Items */}
           <div className="hidden md:flex items-center space-x-1">
-            {navItems.map((item) => (
-              <Link key={item.href} href={item.href}>
-                <Button
-                  variant={pathname === item.href ? "default" : "ghost"}
-                  size="sm"
-                  className="flex items-center space-x-2"
-                >
-                  <item.icon className="w-4 h-4" />
-                  <span>{item.label}</span>
-                </Button>
-              </Link>
-            ))}
+            {navItems
+              .filter((item) => !item.adminOnly || ["admin", "super_admin"].includes(userRole))
+              .map((item) => (
+                <Link key={item.href} href={item.href}>
+                  <Button
+                    variant={pathname === item.href ? "default" : "ghost"}
+                    size="sm"
+                    className="flex items-center space-x-2"
+                  >
+                    <item.icon className="w-4 h-4" />
+                    <span>{item.label}</span>
+                  </Button>
+                </Link>
+              ))}
           </div>
 
           {/* User Menu */}

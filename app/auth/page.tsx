@@ -63,7 +63,7 @@ export default function AuthPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-2xl font-bold">Welcome to SocialHub</CardTitle>
+          <CardTitle className="text-2xl font-bold">Welcome to Amrella</CardTitle>
           <CardDescription>Connect, Learn, and Grow Together</CardDescription>
         </CardHeader>
         <CardContent>

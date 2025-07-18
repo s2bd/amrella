@@ -10,6 +10,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { Heart, MessageCircle, Share2, MoreHorizontal, ImageIcon, Video, FileText } from "lucide-react"
 import { formatDistanceToNow } from "date-fns"
+import { VerifiedBadge } from "@/components/verified-badge"
+import { ReportDialog } from "@/components/report-dialog"
 
 interface Post {
   id: string
@@ -22,6 +24,8 @@ interface Post {
   profiles: {
     full_name: string
     avatar_url: string
+    is_verified: boolean
+    verification_type: string
   }
 }
 
@@ -43,7 +47,9 @@ export function ActivityFeed() {
           *,
           profiles (
             full_name,
-            avatar_url
+            avatar_url,
+            is_verified,
+            verification_type
           )
         `)
         .order("created_at", { ascending: false })
@@ -159,7 +165,13 @@ export function ActivityFeed() {
                       <AvatarFallback>{post.profiles?.full_name?.charAt(0) || "U"}</AvatarFallback>
                     </Avatar>
                     <div>
-                      <p className="font-medium">{post.profiles?.full_name || "Anonymous"}</p>
+                      <div className="flex items-center space-x-1">
+                        <p className="font-medium">{post.profiles?.full_name || "Anonymous"}</p>
+                        <VerifiedBadge
+                          isVerified={post.profiles?.is_verified || false}
+                          verificationType={post.profiles?.verification_type}
+                        />
+                      </div>
                       <p className="text-sm text-gray-500">
                         {formatDistanceToNow(new Date(post.created_at), { addSuffix: true })}
                       </p>
@@ -198,6 +210,7 @@ export function ActivityFeed() {
                       <Share2 className="w-4 h-4" />
                     </Button>
                   </div>
+                  <ReportDialog reportedPostId={post.id} reportedUserId={post.user_id} />
                 </div>
               </CardContent>
             </Card>
